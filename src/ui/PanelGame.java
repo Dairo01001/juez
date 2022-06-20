@@ -73,6 +73,10 @@ public class PanelGame extends JPanel {
     public String getAnswer() {
         return jTextFieldAnswer.getText();
     }
+    
+    public void clearAnswer() {
+        jTextFieldAnswer.setText("");
+    }
 
     private JLabel jLabelAnswer;
     private JLabel jLabelArgs;

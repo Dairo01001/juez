@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.BorderLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -20,13 +21,27 @@ public class PanelConfig extends JPanel {
         play = new JButton("Jugar");
         exit = new JButton("Salir");
         addQuestion = new JButton("Agregar pregunta");
+        viewScore = new JButton("Ver Score");
         
         name = new JTextField(10);
+        
+        
+        JPanel panelAddQuestion = new JPanel();
+        panelAddQuestion.add(addQuestion);
+        panelAddQuestion.add(viewScore);
 
-        add(play, BorderLayout.NORTH);
-        add(exit, BorderLayout.SOUTH);
-        add(addQuestion, BorderLayout.CENTER);
-        add(name, BorderLayout.EAST);
+        
+        JPanel panelOpciones = new JPanel();
+        panelOpciones.add(play);
+        panelOpciones.add(exit);
+    
+        JPanel panelConfig = new JPanel();
+        panelConfig.add(new JLabel("Nombre: "));
+        panelConfig.add(name);
+        
+        add(panelAddQuestion, BorderLayout.NORTH);
+        add(panelOpciones, BorderLayout.SOUTH);
+        add(panelConfig, BorderLayout.CENTER);
     }
 
     public JButton getButtonPlay() {
@@ -44,9 +59,14 @@ public class PanelConfig extends JPanel {
     public String getPlayerName () {
         return name.getText();
     }
+    
+    public JButton getButtonScore() {
+        return viewScore;
+    }
 
     private JButton play;
     private JButton exit;
     private JButton addQuestion;
+    private JButton viewScore;
     private JTextField name;
 }
