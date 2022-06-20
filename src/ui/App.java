@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import game.Player;
+import utils.Utils;
 
 import java.awt.event.ActionListener;
 
@@ -16,9 +17,9 @@ public class App  extends JFrame {
     private CardLayout views;
     private JPanel mainView;
     private FileChooser saveView;
-    private Config configView;
-    private Game playView;
+    private PanelConfig panelConfig;
     private Player player;
+    private PanelGame panelGame;
             
     public App() throws HeadlessException {
         init();
@@ -28,6 +29,7 @@ public class App  extends JFrame {
     private void init() {
         setTitle("Quizz");
         setResizable(false);
+        setSize(Utils.WIDTH, Utils.HEIGHT);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -39,19 +41,19 @@ public class App  extends JFrame {
         views = new CardLayout();
         mainView = new JPanel(views);
         
-        configView = new Config();
-        configView.getExit().addActionListener(new ActionExit());
-        configView.getAddQuestion().addActionListener(new ActionAddQuestion());
-        configView.getPlay().addActionListener(new ActionPlay());
-        mainView.add(configView, "config");
-
-
-        playView = new Game();
-        mainView.add(playView, "play");
+        panelConfig = new PanelConfig();
+        panelConfig.getButtonExit().addActionListener(new ActionExit());
+        panelConfig.getButtonAddQuestion().addActionListener(new ActionAddQuestion());
+        panelConfig.getButtonPlay().addActionListener(new ActionPlay());
+        mainView.add(panelConfig, "config");
 
         saveView = new FileChooser();
         mainView.add(saveView, "save");
 
+        panelGame = new PanelGame();
+        panelGame.getButtonNext().addActionListener(new ActionNextQuestion());
+        panelGame.setImg("/data/Question"+ 1 +".png");
+        mainView.add(panelGame, "panelGame");
         
         add(mainView, BorderLayout.CENTER);
     }
@@ -60,12 +62,12 @@ public class App  extends JFrame {
         views.show(mainView, "config");
     }
 
-    public void showPlay() {
-        views.show(mainView, "play");
-    }
-
     public void showSave() {
         views.show(mainView, "save");
+    }
+
+    public void showPanelGame() {
+        views.show(mainView, "panelGame");
     }
 
     private class ActionExit implements ActionListener {
@@ -94,26 +96,46 @@ public class App  extends JFrame {
         @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
 
-            String namePlayer = configView.getNamePlayer();
+            String namePlayer = panelConfig.getPlayerName();
 
             if(!namePlayer.equals("")) {
                 player.setName(namePlayer);
                 setTitle(namePlayer);
-                initGame();
-                showPlay();
+                showPanelGame();
             } else {
                 JOptionPane.showMessageDialog(mainView, "Ingresa un nombre");
             }
         }
     }
 
-    private void initGame() {
-        playView.setImg("/imgFiles/primer.png");
+    private class ActionNextQuestion implements ActionListener {
+
+        private int questionNumber = 2;
+        private int maxQuestions =  Utils.getNumberQuestion();
+
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent e) {
+            if(questionNumber <= maxQuestions) {
+                if(!panelGame.getAnswer().equals("")) {
+                    if(panelGame.getAnswer().equals(Utils.getAnswer(new String[] {}, questionNumber))) {
+                        player.setScore(player.getScore() + 1);
+                    }            
+                    
+                    panelGame.setImg("/data/Question"+ questionNumber +".png");
+
+                    questionNumber++;
+                } else {
+                    JOptionPane.showMessageDialog(mainView, "Ingresa una respuesta");
+                }
+                
+            } else {
+                JOptionPane.showMessageDialog(mainView, "No hay más preguntas");
+            }
+        }
     }
     
     public static void main(String[] args) {
        App app = new App();
-       app.pack();
        app.setVisible(true);
     }
 }

@@ -5,6 +5,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -22,6 +24,9 @@ public class FileChooser extends JPanel {
     private JLabel javaLabel;
     private JTextArea log;
     private JFileChooser fileChooser;
+    private int questionNumber;
+    private int questionCount;
+
     
     public FileChooser() {
         init();
@@ -44,10 +49,16 @@ public class FileChooser extends JPanel {
         log = new JTextArea(5, 20);
         log.setEditable(false);
         log.setMargin(new Insets(5, 5, 5, 5));
+
+        ArrayList<String> listJava = Utils.listOfFileString(Utils.DIR_JAVA, ".java");
+        ArrayList<String> listPNG = Utils.listOfFileString(Utils.DIR_IMG, ".png");
+
+        questionNumber  = Math.min(listJava.size(), listPNG.size()) + 1;
+        questionCount = 0;
         
-        log.append("Java: " + String.join(", ", Utils.listOfFileString(Utils.DIR_JAVA)) + "\n");
-        log.append("PNG: " + String.join(", ", Utils.listOfFileString(Utils.DIR_IMG)) + "\n");
-        
+        log.append("Java: " + listJava.toString() + "\n");
+        log.append("PNG: " + listPNG.toString() + "\n");
+
         copyJavaButton.addActionListener(new ActionCopyJava());
         copyPNGButton.addActionListener(new ActionCopyPNG());
         
@@ -76,11 +87,19 @@ public class FileChooser extends JPanel {
             if (val == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
 
-                File copyOfFile = new File(Utils.DIR_IMG + Utils.SEPARATOR + file.getName());
+                File copyOfFile = new File(Utils.DIR_IMG + Utils.SEPARATOR + "Question" + questionNumber + ".png");
 
                 Utils.copyFile(file, copyOfFile);
                 if (copyOfFile.exists()) {
-                    log.append("Nuevo PNG copiado: " + copyOfFile.getName() + "\n");
+                    
+                    if (questionCount == 1) {
+                        log.append("Se copio el archivo " + file.getName() + " a " + copyOfFile.getName() + "\n");
+                        questionCount = 0;
+                        questionNumber++;
+                    } else {
+                        log.append("Se copio el archivo " + file.getName() + " a " + copyOfFile.getName() + " pero no se ha terminado de copiar todos los archivos\n");
+                        questionCount++;
+                    }
                     pngLabel.setText("PNG cargado!");
                 }
             }
@@ -96,11 +115,19 @@ public class FileChooser extends JPanel {
             if (val == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
 
-                File copyOfFile = new File(Utils.DIR_JAVA + Utils.SEPARATOR + file.getName());
+                File copyOfFile = new File(Utils.DIR_JAVA + Utils.SEPARATOR + "Question" + questionNumber + ".java");
                 
                 Utils.copyFile(file, copyOfFile);
                 if (copyOfFile.exists()) {
-                    log.append("Nuevo Java copiado: " + copyOfFile.getName() + "\n");
+                    if (questionCount == 1) {
+                        log.append("Se copio el archivo " + file.getName() + " a " + copyOfFile.getName() + "\n");
+                        questionCount = 0;
+                        questionNumber++;
+                    } else {
+                        log.append("Se copio el archivo " + file.getName() + " a " + copyOfFile.getName() + " pero no se ha terminado de copiar todos los archivos\n");
+                        questionCount++;
+                    }
+
                     javaLabel.setText("Java cargado!");
                 }
             }

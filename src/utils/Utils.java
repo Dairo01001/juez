@@ -7,16 +7,19 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 
 public class Utils {
 
+    public static final int WIDTH = 800;
+    public static final int HEIGHT = 600;
     public static final String DIR_PROJECT = System.getProperty("user.dir");
     public static final String SEPARATOR = System.getProperty("file.separator");
-    public static final String DIR_JAVA = DIR_PROJECT + SEPARATOR + "javaFiles";
-    public static final String DIR_IMG = DIR_PROJECT + SEPARATOR + "imgFiles";
+    public static final String DIR_JAVA = DIR_PROJECT + SEPARATOR + "src" + SEPARATOR + "data";
+    public static final String DIR_IMG = DIR_PROJECT + SEPARATOR + "src" + SEPARATOR + "data";
     public static final String PASSWORD = "1234";
 
     public static void copyFile(File source, File dest) {
@@ -29,7 +32,7 @@ public class Utils {
 
     public static String execJavaFile(String[] parametros, String javaFile) {
         try {
-            Process process = Runtime.getRuntime().exec("java " + "javaFiles" + SEPARATOR + javaFile + " " + String.join(" ", parametros));
+            Process process = Runtime.getRuntime().exec("java " + "src" + SEPARATOR + "data" + SEPARATOR + javaFile + " " + String.join(" ", parametros));
             InputStream inputStream = process.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             return new BufferedReader(inputStreamReader).lines().collect(Collectors.joining());
@@ -58,16 +61,24 @@ public class Utils {
         return list;
     }
 
-    public static String[] listOfFileString(String dir, String extension) {
+    public static ArrayList<String> listOfFileString(String dir, String extension) {
         File[] files = new File(dir).listFiles();
-        String[] list = new String[files.length];
+        ArrayList<String> list = new ArrayList<>();  
 
         for (int i = 0; i < files.length; i++) {
             if (files[i].getName().endsWith(extension)) {
-                list[i] = files[i].getName();
+                list.add(files[i].getName());
             }
         }
 
         return list;
+    }
+
+    public static int getNumberQuestion() {
+        return new File(DIR_IMG).listFiles().length / 2;
+    }
+
+    public static String getAnswer( String[] param, int number) {
+        return execJavaFile(param, "Question" + number + ".java");
     }
 }
