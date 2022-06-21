@@ -1,13 +1,16 @@
 package utils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
@@ -20,6 +23,7 @@ public class Utils {
     public static final String SEPARATOR = System.getProperty("file.separator");
     public static final String DIR_JAVA = DIR_PROJECT + SEPARATOR + "src" + SEPARATOR + "data";
     public static final String DIR_IMG = DIR_PROJECT + SEPARATOR + "src" + SEPARATOR + "data";
+    public static final String DIR_SCORE = DIR_PROJECT + SEPARATOR + "src" + SEPARATOR + "score" + SEPARATOR;
     public static final String PASSWORD = "1234";
 
     public static void copyFile(File source, File dest) {
@@ -80,5 +84,29 @@ public class Utils {
 
     public static String getAnswer( String[] param, int number) {
         return execJavaFile(param, "Question" + number + ".java");
+    }
+    
+    public static String getPuntaje() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%10s %5s\n", "Nombre", "Putaje"));
+        try {
+            File doc = new File(DIR_SCORE + "score.txt");
+            try (Scanner sc = new Scanner(doc)) {
+                while(sc.hasNextLine()) {
+                    sb.append(sc.nextLine() + "\n");
+                }
+            }
+        } catch (Exception e) {
+        }
+        return sb.toString();
+    }
+    
+    public static void setPuntaje(String line) {
+        try {
+            FileWriter fileWriter = new FileWriter(DIR_SCORE + "score.txt", true);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(line);
+        } catch (IOException e) {
+        }
     }
 }

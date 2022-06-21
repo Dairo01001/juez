@@ -69,6 +69,7 @@ public class App extends JFrame {
 
         panelScore = new PanelScore();
         panelScore.getBack().addActionListener(new ActionBack());
+        panelScore.getLogScore().append(Utils.getPuntaje());
         mainView.add(panelScore, "score");
 
         add(mainView, BorderLayout.CENTER);
@@ -178,6 +179,9 @@ public class App extends JFrame {
                     
                     if (questionNumber == maxQuestions) {
                         JOptionPane.showMessageDialog(mainView, "Juego terminado");
+                        String line = String.format("%10s %5s\n", player.getName(), player.getScore());
+                        Utils.setPuntaje(line);
+                        panelScore.getLogScore().append(line);
                         showConfig();
                     } else {
                         questionNumber++;
